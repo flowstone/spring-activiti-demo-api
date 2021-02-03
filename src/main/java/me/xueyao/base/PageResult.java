@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.Page;
 
 /**
  * @author Simon.Xue
@@ -20,10 +19,10 @@ public class PageResult<T> {
     private Long count;
     private T result;
 
-    public PageResult(T data, Page page) {
-        this.result = data;
-        this.pageNum = page.getPageable().getPageNumber() + 1;
-        this.pageSize = page.getPageable().getPageSize();
-        this.count = page.getTotalElements();
-    }
+//    public PageResult(T data, Page page) {
+//        this.result = data;
+//        this.pageNum = page.getPageable().getPageNumber() + 1;
+//        this.pageSize = page.getPageable().getPageSize();
+//        this.count = page.getTotalElements();
+//    }
 }

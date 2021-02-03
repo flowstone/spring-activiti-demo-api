@@ -2,12 +2,19 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: spring-activiti-demo-api
   datasource:
     url: jdbc:mysql://localhost:3306/spring-activiti-demo-api?useUnicode=true&characterEncoding=utf8&nullCatalogMeansCurrent=true
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+  activiti:
+    database-schema: ACTIVITI # 自动建表
+    database-schema-update: true #表示启动时检查数据库表，不存在则创建
+    history-level: full #表示哪种情况下使用历史表，这里配置为full表示全部记录历史，方便绘制流程图
+    db-history-used: true #表示使用历史表，如果不配置，则工程启动后可以检查数据库，只建立了17张表，历史表没有建立，则流程图及运行节点无法展示
+project:
+  manifest:
+    file:
+      path: classpath:/default-project.json
