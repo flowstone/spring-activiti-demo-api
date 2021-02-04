@@ -1,10 +1,8 @@
 package me.xueyao;
 
-import org.activiti.core.common.spring.identity.config.ActivitiSpringIdentityAutoConfiguration;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 
 /**
@@ -12,11 +10,12 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
  * @author simonxue
  */
 @SpringBootApplication(exclude = {
-        // 排除SpringSecurity的自动配置
-        SecurityAutoConfiguration.class,
-        ManagementWebSecurityAutoConfiguration.class,
-        ActivitiSpringIdentityAutoConfiguration.class
+        //DataSourceAutoConfiguration.class,
+        org.activiti.spring.boot.SecurityAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
+
 })
+@MapperScan(basePackages = "me.xueyao.mapper")
 public class SpringActivitiDemoApiApplication {
 
     public static void main(String[] args) {

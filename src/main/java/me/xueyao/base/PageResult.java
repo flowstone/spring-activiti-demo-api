@@ -1,5 +1,6 @@
 package me.xueyao.base;
 
+import com.github.pagehelper.Page;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +20,10 @@ public class PageResult<T> {
     private Long count;
     private T result;
 
-//    public PageResult(T data, Page page) {
-//        this.result = data;
-//        this.pageNum = page.getPageable().getPageNumber() + 1;
-//        this.pageSize = page.getPageable().getPageSize();
-//        this.count = page.getTotalElements();
-//    }
+    public PageResult(Page page) {
+        this.result = (T)page.getResult();
+        this.pageNum = page.getPageNum();
+        this.pageSize = page.getPageSize();
+        this.count = page.getTotal();
+    }
 }
