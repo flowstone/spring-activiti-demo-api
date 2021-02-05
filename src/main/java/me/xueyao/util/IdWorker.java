@@ -6,6 +6,7 @@ import java.net.NetworkInterface;
 
 /**
  * 雪花算法代码实现
+ *
  * @author Simon.Xue
  * @date 1/22/21 5:43 PM
  **/
@@ -51,7 +52,7 @@ public class IdWorker {
 
     private final static long sequenceMask = -1L ^ (-1L << sequenceBits);
     /**
-     *  上次生产id时间戳
+     * 上次生产id时间戳
      */
     private static long lastTimestamp = -1L;
     /**
@@ -64,16 +65,15 @@ public class IdWorker {
      */
     private final long dataCenterId;
 
-    public IdWorker(){
+    public IdWorker() {
 
         this.dataCenterId = getDataCenterId(maxDataCenterId);
         this.workerId = getMaxWorkerId(dataCenterId, maxWorkerId);
     }
+
     /**
-     * @param workerId
-     * 工作机器ID
-     * @param dataCenterId
-     * 序列号
+     * @param workerId     工作机器ID
+     * @param dataCenterId 序列号
      */
     public IdWorker(long workerId, long dataCenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
@@ -85,6 +85,7 @@ public class IdWorker {
         this.workerId = workerId;
         this.dataCenterId = dataCenterId;
     }
+
     /**
      * 获取下一个ID
      *
@@ -112,6 +113,7 @@ public class IdWorker {
                 | (workerId << workerIdShift) | sequence;
         return nextId;
     }
+
     private long tilNextMillis(final long lastTimestamp) {
         long timestamp = this.timeGen();
         while (timestamp <= lastTimestamp) {
@@ -119,9 +121,11 @@ public class IdWorker {
         }
         return timestamp;
     }
+
     private long timeGen() {
         return System.currentTimeMillis();
     }
+
     /**
      * <p>
      * 获取 maxWorkerId
@@ -142,6 +146,7 @@ public class IdWorker {
          */
         return (mpid.toString().hashCode() & 0xffff) % (maxWorkerId + 1);
     }
+
     /**
      * <p>
      * 数据标识id部分

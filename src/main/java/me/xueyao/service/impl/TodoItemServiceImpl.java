@@ -1,10 +1,10 @@
 package me.xueyao.service.impl;
 
-import me.xueyao.entity.BizTodoItem;
+import me.xueyao.entity.TodoItem;
 import me.xueyao.entity.SysUser;
-import me.xueyao.mapper.BizTodoItemMapper;
+import me.xueyao.mapper.TodoItemMapper;
 import me.xueyao.mapper.SysUserMapper;
-import me.xueyao.service.IBizTodoItemService;
+import me.xueyao.service.ITodoItemService;
 import me.xueyao.util.Convert;
 import me.xueyao.util.DateUtils;
 import me.xueyao.util.StringUtils;
@@ -26,9 +26,9 @@ import java.util.List;
  */
 @Service
 @Transactional
-public class BizTodoItemServiceImpl implements IBizTodoItemService {
+public class TodoItemServiceImpl implements ITodoItemService {
     @Autowired
-    private BizTodoItemMapper bizTodoItemMapper;
+    private TodoItemMapper todoItemMapper;
     @Autowired
     private SysUserMapper userMapper;
     @Autowired
@@ -41,41 +41,41 @@ public class BizTodoItemServiceImpl implements IBizTodoItemService {
      * @return 待办事项
      */
     @Override
-    public BizTodoItem selectBizTodoItemById(Long id) {
-        return bizTodoItemMapper.selectBizTodoItemById(id);
+    public TodoItem selectBizTodoItemById(Long id) {
+        return todoItemMapper.selectBizTodoItemById(id);
     }
 
     /**
      * 查询待办事项列表
      *
-     * @param bizTodoItem 待办事项
+     * @param todoItem 待办事项
      * @return 待办事项
      */
     @Override
-    public List<BizTodoItem> selectBizTodoItemList(BizTodoItem bizTodoItem) {
-        return bizTodoItemMapper.selectBizTodoItemList(bizTodoItem);
+    public List<TodoItem> selectBizTodoItemList(TodoItem todoItem) {
+        return todoItemMapper.selectBizTodoItemList(todoItem);
     }
 
     /**
      * 新增待办事项
      *
-     * @param bizTodoItem 待办事项
+     * @param todoItem 待办事项
      * @return 结果
      */
     @Override
-    public int insertBizTodoItem(BizTodoItem bizTodoItem) {
-        return bizTodoItemMapper.insertBizTodoItem(bizTodoItem);
+    public int insertBizTodoItem(TodoItem todoItem) {
+        return todoItemMapper.insertBizTodoItem(todoItem);
     }
 
     /**
      * 修改待办事项
      *
-     * @param bizTodoItem 待办事项
+     * @param todoItem 待办事项
      * @return 结果
      */
     @Override
-    public int updateBizTodoItem(BizTodoItem bizTodoItem) {
-        return bizTodoItemMapper.updateBizTodoItem(bizTodoItem);
+    public int updateBizTodoItem(TodoItem todoItem) {
+        return todoItemMapper.updateBizTodoItem(todoItem);
     }
 
     /**
@@ -86,7 +86,7 @@ public class BizTodoItemServiceImpl implements IBizTodoItemService {
      */
     @Override
     public int deleteBizTodoItemByIds(String ids) {
-        return bizTodoItemMapper.deleteBizTodoItemByIds(Convert.toStrArray(ids));
+        return todoItemMapper.deleteBizTodoItemByIds(Convert.toStrArray(ids));
     }
 
     /**
@@ -97,12 +97,12 @@ public class BizTodoItemServiceImpl implements IBizTodoItemService {
      */
     @Override
     public int deleteBizTodoItemById(Long id) {
-        return bizTodoItemMapper.deleteBizTodoItemById(id);
+        return todoItemMapper.deleteBizTodoItemById(id);
     }
 
     @Override
     public int insertTodoItem(String instanceId, String itemName, String itemContent, String module) {
-        BizTodoItem todoItem = new BizTodoItem();
+        TodoItem todoItem = new TodoItem();
         todoItem.setItemName(itemName);
         todoItem.setItemContent(itemContent);
         todoItem.setIsView("0");
@@ -111,15 +111,15 @@ public class BizTodoItemServiceImpl implements IBizTodoItemService {
         todoItem.setTodoTime(DateUtils.getNowDate());
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instanceId).active().list();
         int counter = 0;
-        for (Task task: taskList) {
+        for (Task task : taskList) {
 
             // todoitem 去重
-            BizTodoItem bizTodoItem = bizTodoItemMapper.selectTodoItemByTaskId(task.getId());
+            TodoItem bizTodoItem = todoItemMapper.selectTodoItemByTaskId(task.getId());
             if (bizTodoItem != null) {
                 continue;
             }
 
-            BizTodoItem newItem = new BizTodoItem();
+            TodoItem newItem = new TodoItem();
             BeanUtils.copyProperties(todoItem, newItem);
             newItem.setInstanceId(instanceId);
             newItem.setTaskId(task.getId());
@@ -130,26 +130,26 @@ public class BizTodoItemServiceImpl implements IBizTodoItemService {
                 newItem.setTodoUserId(assignee);
                 SysUser user = userMapper.selectUserByLoginName(assignee);
                 newItem.setTodoUserName(user.getUserName());
-                bizTodoItemMapper.insertBizTodoItem(newItem);
+                todoItemMapper.insertBizTodoItem(newItem);
                 counter++;
             } else {
                 // 查询候选用户组
-                List<String> todoUserIdList = bizTodoItemMapper.selectTodoUserListByTaskId(task.getId());
+                List<String> todoUserIdList = todoItemMapper.selectTodoUserListByTaskId(task.getId());
                 if (!CollectionUtils.isEmpty(todoUserIdList)) {
-                    for (String todoUserId: todoUserIdList) {
+                    for (String todoUserId : todoUserIdList) {
                         SysUser todoUser = userMapper.selectUserByLoginName(todoUserId);
                         newItem.setTodoUserId(todoUser.getLoginName());
                         newItem.setTodoUserName(todoUser.getUserName());
-                        bizTodoItemMapper.insertBizTodoItem(newItem);
+                        todoItemMapper.insertBizTodoItem(newItem);
                         counter++;
                     }
                 } else {
                     // 查询候选用户
-                    String todoUserId = bizTodoItemMapper.selectTodoUserByTaskId(task.getId());
+                    String todoUserId = todoItemMapper.selectTodoUserByTaskId(task.getId());
                     SysUser todoUser = userMapper.selectUserByLoginName(todoUserId);
                     newItem.setTodoUserId(todoUser.getLoginName());
                     newItem.setTodoUserName(todoUser.getUserName());
-                    bizTodoItemMapper.insertBizTodoItem(newItem);
+                    todoItemMapper.insertBizTodoItem(newItem);
                     counter++;
                 }
             }
@@ -158,7 +158,7 @@ public class BizTodoItemServiceImpl implements IBizTodoItemService {
     }
 
     @Override
-    public BizTodoItem selectBizTodoItemByCondition(String taskId, String todoUserId) {
-        return bizTodoItemMapper.selectTodoItemByCondition(taskId, todoUserId);
+    public TodoItem selectBizTodoItemByCondition(String taskId, String todoUserId) {
+        return todoItemMapper.selectTodoItemByCondition(taskId, todoUserId);
     }
 }

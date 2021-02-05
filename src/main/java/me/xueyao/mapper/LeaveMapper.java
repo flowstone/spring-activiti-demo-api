@@ -1,9 +1,9 @@
 package me.xueyao.mapper;
 
-import me.xueyao.entity.BizLeaveVo;
+import com.github.pagehelper.Page;
+import me.xueyao.entity.dto.LeaveDTO;
+import me.xueyao.entity.vo.LeaveVo;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * 请假业务Mapper接口
@@ -12,38 +12,39 @@ import java.util.List;
  * @date 2019-10-11
  */
 @Repository
-public interface BizLeaveMapper {
+public interface LeaveMapper {
     /**
      * 查询请假业务
      *
      * @param id 请假业务ID
      * @return 请假业务
      */
-    BizLeaveVo selectBizLeaveById(Long id);
+    LeaveVo selectLeaveById(Long id);
 
     /**
      * 查询请假业务列表
      *
-     * @param bizLeave 请假业务
+     * @param leaveDTO 请假业务
+     * @param page
      * @return 请假业务集合
      */
-    List<BizLeaveVo> selectBizLeaveList(BizLeaveVo bizLeave);
+    Page<LeaveVo> selectLeaveList(LeaveDTO leaveDTO, Page page);
 
     /**
      * 新增请假业务
      *
-     * @param bizLeave 请假业务
+     * @param leaveDTO 请假业务
      * @return 结果
      */
-    int insertBizLeave(BizLeaveVo bizLeave);
+    int insertLeave(LeaveDTO leaveDTO);
 
     /**
      * 修改请假业务
      *
-     * @param bizLeave 请假业务
+     * @param leaveVo 请假业务
      * @return 结果
      */
-    int updateBizLeave(BizLeaveVo bizLeave);
+    int updateLeave(LeaveVo leaveVo);
 
     /**
      * 删除请假业务
@@ -51,7 +52,7 @@ public interface BizLeaveMapper {
      * @param id 请假业务ID
      * @return 结果
      */
-    int deleteBizLeaveById(Long id);
+    int deleteLeaveById(Long id);
 
     /**
      * 批量删除请假业务
@@ -59,5 +60,5 @@ public interface BizLeaveMapper {
      * @param ids 需要删除的数据ID
      * @return 结果
      */
-    int deleteBizLeaveByIds(String[] ids);
+    int deleteLeaveByIds(String[] ids);
 }

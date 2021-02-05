@@ -1,11 +1,14 @@
 package me.xueyao.service.impl;
 
-import me.xueyao.entity.BizTodoItem;
+import lombok.extern.slf4j.Slf4j;
+import me.xueyao.base.PageResult;
+import me.xueyao.base.R;
 import me.xueyao.entity.HistoricActivity;
 import me.xueyao.entity.SysUser;
+import me.xueyao.entity.TodoItem;
 import me.xueyao.mapper.SysUserMapper;
-import me.xueyao.service.IBizTodoItemService;
 import me.xueyao.service.IProcessService;
+import me.xueyao.service.ITodoItemService;
 import me.xueyao.util.DateUtils;
 import me.xueyao.util.StringUtils;
 import org.activiti.engine.HistoryService;
@@ -20,8 +23,6 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,10 +36,13 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author simonxue
+ */
+@Slf4j
 @Service
-@Transactional
+@Transactional(rollbackFor = RuntimeException.class)
 public class ProcessServiceImpl implements IProcessService {
-    protected final Logger logger = LoggerFactory.getLogger(ProcessServiceImpl.class);
 
     @Autowired
     private RuntimeService runtimeService;
@@ -48,25 +52,27 @@ public class ProcessServiceImpl implements IProcessService {
     private TaskService taskService;
     @Autowired
     private HistoryService historyService;
+
     @Autowired
     private SysUserMapper userMapper;
     @Autowired
-    private IBizTodoItemService bizTodoItemService;
+    private ITodoItemService bizTodoItemService;
 
     @Override
-    public ProcessInstance submitApply(String applyUserId, String businessKey, String itemName, String itemConent, String module, Map<String, Object> variables) {
+    public ProcessInstance submitApply(String applyUserId, String businessKey, String itemName, String itemContent,
+                                       String module, Map<String, Object> variables) {
         // 用来设置启动流程的人员ID，引擎会自动把用户ID保存到activiti:initiator中
         identityService.setAuthenticatedUserId(applyUserId);
         // 启动流程时设置业务 key
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(module, businessKey, variables);
         // 下一节点处理人待办事项
-        bizTodoItemService.insertTodoItem(instance.getProcessInstanceId(), itemName, itemConent, module);
+        bizTodoItemService.insertTodoItem(instance.getProcessInstanceId(), itemName, itemContent, module);
         return instance;
     }
 
     @Override
     public List<Task> findTodoTasks(String userId, String key) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         // 根据当前人的ID查询
         List<Task> todoList = taskService
                 .createTaskQuery()
@@ -99,8 +105,8 @@ public class ProcessServiceImpl implements IProcessService {
     }
 
     @Override
-    public void complete(String taskId, String instanceId, String itemName, String itemContent, String module, Map<String, Object> variables, HttpServletRequest request) {
-        String loginName = "axianlu";
+    public R complete(String taskId, String instanceId, String itemName, String itemContent, String module,
+                      Map<String, Object> variables, HttpServletRequest request, String loginName) {
 
         Enumeration<String> parameterNames = request.getParameterNames();
         // 批注
@@ -146,11 +152,11 @@ public class ProcessServiceImpl implements IProcessService {
             taskService.complete(taskId, variables);
 
             // 更新待办事项状态
-            BizTodoItem query = new BizTodoItem();
+            TodoItem query = new TodoItem();
             query.setTaskId(taskId);
             // 考虑到候选用户组，会有多个 todoitem 办理同个 task
-            List<BizTodoItem> updateList = CollectionUtils.isEmpty(bizTodoItemService.selectBizTodoItemList(query)) ? null : bizTodoItemService.selectBizTodoItemList(query);
-            for (BizTodoItem update: updateList) {
+            List<TodoItem> updateList = CollectionUtils.isEmpty(bizTodoItemService.selectBizTodoItemList(query)) ? null : bizTodoItemService.selectBizTodoItemList(query);
+            for (TodoItem update : updateList) {
                 // 找到当前登录用户的 todoitem，置为已办
                 if (update.getTodoUserId().equals(loginName)) {
                     update.setIsView("1");
@@ -161,75 +167,85 @@ public class ProcessServiceImpl implements IProcessService {
                     update.setHandleTime(DateUtils.getNowDate());
                     bizTodoItemService.updateBizTodoItem(update);
                 } else {
-                    bizTodoItemService.deleteBizTodoItemById(update.getId()); // 删除候选用户组其他 todoitem
+                    // 删除候选用户组其他 todoitem
+                    bizTodoItemService.deleteBizTodoItemById(update.getId());
                 }
             }
 
             // 下一节点处理人待办事项
             bizTodoItemService.insertTodoItem(instanceId, itemName, itemContent, module);
         } catch (Exception e) {
-            logger.error("error on complete task {}, variables={}", new Object[]{taskId, variables, e});
+            log.error("error on complete task {}, variables={}", new Object[]{taskId, variables, e});
         }
+        return R.ofSuccess("完成任务");
     }
 
     @Override
-    public List<HistoricActivity> selectHistoryList(String processInstanceId, HistoricActivity historicActivity) {
-//        PageDomain pageDomain = TableSupport.buildPageRequest();
-//        Integer pageNum = pageDomain.getPageNum();
-//        Integer pageSize = pageDomain.getPageSize();
+    public R selectHistoryList(String processInstanceId, HistoricActivity historicActivity) {
+        Integer pageNum = historicActivity.getPageNum();
+        Integer pageSize = historicActivity.getPageSize();
         List<HistoricActivity> activityList = new ArrayList<>();
+
         HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery();
         if (StringUtils.isNotBlank(historicActivity.getAssignee())) {
             query.taskAssignee(historicActivity.getAssignee());
         }
+
         if (StringUtils.isNotBlank(historicActivity.getActivityName())) {
             query.activityName(historicActivity.getActivityName());
         }
-        List<HistoricActivityInstance> list = query.processInstanceId(processInstanceId)
+
+        List<HistoricActivityInstance> historicActivityInstanceList = query.processInstanceId(processInstanceId)
                 .activityType("userTask")
                 .finished()
                 .orderByHistoricActivityInstanceStartTime()
                 .desc()
                 .list();
-//                .listPage((pageNum - 1) * pageSize, pageNum * pageSize);
-        list.forEach(instance -> {
+
+        historicActivityInstanceList.forEach(instance -> {
             HistoricActivity activity = new HistoricActivity();
             BeanUtils.copyProperties(instance, activity);
             String taskId = instance.getTaskId();
+
             List<Comment> comment = taskService.getTaskComments(taskId, "comment");
+
             if (!CollectionUtils.isEmpty(comment)) {
                 activity.setComment(comment.get(0).getFullMessage());
             }
+
             SysUser sysUser = userMapper.selectUserByLoginName(instance.getAssignee());
             if (sysUser != null) {
                 activity.setAssigneeName(sysUser.getUserName());
             }
             activityList.add(activity);
         });
-        return activityList;
+
+        return R.ofSuccess("查询成功", new PageResult<>(pageNum, pageSize, activityList));
     }
 
     @Override
-    public void delegate(String taskId, String fromUser, String delegateToUser) {
+    public R delegate(String taskId, String fromUser, String delegateToUser) {
         taskService.delegateTask(taskId, delegateToUser);
         // 更新待办事项
-        BizTodoItem updateItem = bizTodoItemService.selectBizTodoItemByCondition(taskId, fromUser);
+        TodoItem updateItem = bizTodoItemService.selectBizTodoItemByCondition(taskId, fromUser);
         if (updateItem != null) {
             SysUser todoUser = userMapper.selectUserByLoginName(delegateToUser);
             updateItem.setTodoUserId(delegateToUser);
             updateItem.setTodoUserName(todoUser.getUserName());
             bizTodoItemService.updateBizTodoItem(updateItem);
         }
+        return R.ofSuccess("");
     }
 
     @Override
-    public void cancelApply(String instanceId, String deleteReason) {
+    public R cancelApply(String instanceId, String deleteReason) {
         // 执行此方法后未审批的任务 act_ru_task 会被删除，流程历史 act_hi_taskinst 不会被删除，并且流程历史的状态为finished完成
         runtimeService.deleteProcessInstance(instanceId, deleteReason);
+        return R.ofSuccess("取消申请成功");
     }
 
     @Override
-    public void suspendOrActiveApply(String instanceId, String suspendState) {
+    public R suspendOrActiveApply(String instanceId, String suspendState) {
         if ("1".equals(suspendState)) {
             // 当流程实例被挂起时，无法通过下一个节点对应的任务id来继续这个流程实例。
             // 通过挂起某一特定的流程实例，可以终止当前的流程实例，而不影响到该流程定义的其他流程实例。
@@ -239,6 +255,7 @@ public class ProcessServiceImpl implements IProcessService {
         } else if ("2".equals(suspendState)) {
             runtimeService.activateProcessInstanceById(instanceId);
         }
+        return R.ofSuccess("更新成功");
     }
 
     @Override

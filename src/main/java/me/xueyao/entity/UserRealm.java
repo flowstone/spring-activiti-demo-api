@@ -12,11 +12,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 自定义Realm 处理登录 权限
- * 
+ *
  * @author ruoyi
  */
-public class UserRealm extends AuthorizingRealm
-{
+public class UserRealm extends AuthorizingRealm {
     private static final Logger log = LoggerFactory.getLogger(UserRealm.class);
 
 //    @Autowired
@@ -32,8 +31,7 @@ public class UserRealm extends AuthorizingRealm
      * 授权
      */
     @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection arg0)
-    {
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection arg0) {
         /*
         SysUser user = ShiroUtils.getSysUser();
         // 角色列表
@@ -65,8 +63,7 @@ public class UserRealm extends AuthorizingRealm
      * 登录认证
      */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException
-    {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         /*
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
         String username = upToken.getUsername();
@@ -119,8 +116,7 @@ public class UserRealm extends AuthorizingRealm
     /**
      * 清理缓存权限
      */
-    public void clearCachedAuthorizationInfo()
-    {
+    public void clearCachedAuthorizationInfo() {
         this.clearCachedAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
     }
 }

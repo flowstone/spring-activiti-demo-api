@@ -12,6 +12,7 @@ public interface IProcessDefinitionService {
 
     /**
      * 流程定义列表
+     *
      * @param customProcessDefinition
      * @return
      */
@@ -19,12 +20,14 @@ public interface IProcessDefinitionService {
 
     /**
      * 部署流程定义
+     *
      * @param filePath
      */
     R deployProcessDefinition(String filePath);
 
     /**
      * 删除流程定义
+     *
      * @param deploymentIds
      * @return
      */
@@ -32,8 +35,9 @@ public interface IProcessDefinitionService {
 
     /**
      * 激活或挂起流程定义
-     * @param id 流程定义id
-     * @param suspendState  active 1 suspended 2
+     *
+     * @param id           流程定义id
+     * @param suspendState active 1 suspended 2
      */
     R suspendOrActiveApply(String id, String suspendState);
 }

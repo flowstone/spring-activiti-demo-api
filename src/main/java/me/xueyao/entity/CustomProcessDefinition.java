@@ -34,7 +34,9 @@ public class CustomProcessDefinition extends BaseEntity {
 
     private String resourceName;
 
-    /** 流程实例状态 1 激活 2 挂起 */
+    /**
+     * 流程实例状态 1 激活 2 挂起
+     */
     private String suspendState;
 
     private String suspendStateName;

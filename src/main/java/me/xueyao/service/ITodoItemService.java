@@ -1,7 +1,7 @@
 package me.xueyao.service;
 
 
-import me.xueyao.entity.BizTodoItem;
+import me.xueyao.entity.TodoItem;
 
 import java.util.List;
 
@@ -11,38 +11,38 @@ import java.util.List;
  * @author Xianlu Tech
  * @date 2019-11-08
  */
-public interface IBizTodoItemService {
+public interface ITodoItemService {
     /**
      * 查询待办事项
      *
      * @param id 待办事项ID
      * @return 待办事项
      */
-    public BizTodoItem selectBizTodoItemById(Long id);
+    public TodoItem selectBizTodoItemById(Long id);
 
     /**
      * 查询待办事项列表
      *
-     * @param bizTodoItem 待办事项
+     * @param todoItem 待办事项
      * @return 待办事项集合
      */
-    public List<BizTodoItem> selectBizTodoItemList(BizTodoItem bizTodoItem);
+    public List<TodoItem> selectBizTodoItemList(TodoItem todoItem);
 
     /**
      * 新增待办事项
      *
-     * @param bizTodoItem 待办事项
+     * @param todoItem 待办事项
      * @return 结果
      */
-    public int insertBizTodoItem(BizTodoItem bizTodoItem);
+    public int insertBizTodoItem(TodoItem todoItem);
 
     /**
      * 修改待办事项
      *
-     * @param bizTodoItem 待办事项
+     * @param todoItem 待办事项
      * @return 结果
      */
-    public int updateBizTodoItem(BizTodoItem bizTodoItem);
+    public int updateBizTodoItem(TodoItem todoItem);
 
     /**
      * 批量删除待办事项
@@ -62,5 +62,5 @@ public interface IBizTodoItemService {
 
     int insertTodoItem(String instanceId, String itemName, String itemContent, String module);
 
-    BizTodoItem selectBizTodoItemByCondition(String taskId, String todoUserId);
+    TodoItem selectBizTodoItemByCondition(String taskId, String todoUserId);
 }

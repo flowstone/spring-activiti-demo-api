@@ -1,41 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.xueyao.mapper.BizLeaveMapper">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.xueyao.mapper.LeaveMapper">
 
-    <resultMap type="me.xueyao.entity.BizLeaveVo" id="BizLeaveResult">
-        <result property="id"    column="id"    />
-        <result property="type"    column="type"    />
-        <result property="title"    column="title"    />
-        <result property="reason"    column="reason"    />
-        <result property="startTime"    column="start_time"    />
-        <result property="endTime"    column="end_time"    />
-        <result property="totalTime"    column="total_time"    />
-        <result property="instanceId"    column="instance_id"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="applyUser"    column="apply_user"    />
-        <result property="applyTime"    column="apply_time"    />
+    <resultMap type="me.xueyao.entity.vo.LeaveVo" id="LeaveResult">
+        <result property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="title" column="title"/>
+        <result property="reason" column="reason"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="totalTime" column="total_time"/>
+        <result property="instanceId" column="instance_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="applyUser" column="apply_user"/>
+        <result property="applyTime" column="apply_time"/>
     </resultMap>
 
-    <sql id="selectBizLeaveVo">
-        select id, type, title, reason, start_time, end_time, total_time, instance_id, create_by, create_time, update_by, update_time, apply_user, apply_time from biz_leave
+    <sql id="selectLeaveVo">
+        select id,
+               type,
+               title,
+               reason,
+               start_time,
+               end_time,
+               total_time,
+               instance_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               apply_user,
+               apply_time
+        from biz_leave
     </sql>
 
-    <select id="selectBizLeaveList" parameterType="me.xueyao.entity.BizLeaveVo" resultMap="BizLeaveResult">
-        <include refid="selectBizLeaveVo"/>
+    <select id="selectLeaveList" parameterType="me.xueyao.entity.dto.LeaveDTO" resultMap="LeaveResult">
+        <include refid="selectLeaveVo"/>
         <where>
-            <if test="type != null  and type != ''"> and type = #{type}</if>
-            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
-            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
-            <if test="startTime != null "> and start_time = #{startTime}</if>
-            <if test="endTime != null "> and end_time = #{endTime}</if>
-            <if test="totalTime != null "> and total_time = #{totalTime}</if>
-            <if test="instanceId != null  and instanceId != ''"> and instance_id = #{instanceId}</if>
-            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="type != null  and type != ''">and type = #{type}</if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="reason != null  and reason != ''">and reason = #{reason}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="totalTime != null ">and total_time = #{totalTime}</if>
+            <if test="instanceId != null  and instanceId != ''">and instance_id = #{instanceId}</if>
+            <if test="createBy != null  and createBy != ''">and create_by = #{createBy}</if>
             <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
                 and date_format(start_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
             </if>
@@ -45,12 +59,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-    <select id="selectBizLeaveById" parameterType="Long" resultMap="BizLeaveResult">
-        <include refid="selectBizLeaveVo"/>
+    <select id="selectLeaveById" parameterType="Long" resultMap="LeaveResult">
+        <include refid="selectLeaveVo"/>
         where id = #{id}
     </select>
 
-    <insert id="insertBizLeave" parameterType="me.xueyao.entity.BizLeaveVo" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertLeave" parameterType="me.xueyao.entity.dto.LeaveDTO" useGeneratedKeys="true" keyProperty="id">
         insert into biz_leave
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="type != null  and type != ''">type,</if>
@@ -64,7 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null ">create_time,</if>
             <if test="updateBy != null  and updateBy != ''">update_by,</if>
             <if test="updateTime != null ">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="type != null  and type != ''">#{type},</if>
             <if test="title != null  and title != ''">#{title},</if>
@@ -77,10 +91,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null ">#{createTime},</if>
             <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
             <if test="updateTime != null ">#{updateTime},</if>
-         </trim>
+        </trim>
     </insert>
 
-    <update id="updateBizLeave" parameterType="me.xueyao.entity.BizLeaveVo">
+    <update id="updateLeave" parameterType="me.xueyao.entity.vo.LeaveVo">
         update biz_leave
         <trim prefix="SET" suffixOverrides=",">
             <if test="type != null  and type != ''">type = #{type},</if>
@@ -102,11 +116,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteBizLeaveById" parameterType="Long">
-        delete from biz_leave where id = #{id}
+    <delete id="deleteLeaveById" parameterType="Long">
+        delete
+        from biz_leave
+        where id = #{id}
     </delete>
 
-    <delete id="deleteBizLeaveByIds" parameterType="String">
+    <delete id="deleteLeaveByIds" parameterType="String">
         delete from biz_leave where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}

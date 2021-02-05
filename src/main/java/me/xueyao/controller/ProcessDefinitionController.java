@@ -81,8 +81,7 @@ public class ProcessDefinitionController {
                 }
             }
             return R.ofParam("不允许上传空文件！");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("上传流程定义文件失败！", e);
             return R.ofParam(e.getMessage());
         }
@@ -95,7 +94,7 @@ public class ProcessDefinitionController {
     }
 
 
-    @PostMapping( "/suspendOrActiveApply")
+    @PostMapping("/suspendOrActiveApply")
     public R suspendOrActiveApply(String id, String suspendState) {
         iProcessDefinitionService.suspendOrActiveApply(id, suspendState);
         return R.ofSuccess("Success");
@@ -126,6 +125,7 @@ public class ProcessDefinitionController {
 
     /**
      * 转换流程定义为模型
+     *
      * @param processDefinitionId
      * @return
      * @throws UnsupportedEncodingException

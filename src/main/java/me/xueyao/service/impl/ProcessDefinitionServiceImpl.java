@@ -38,6 +38,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
 
     /**
      * 分页查询流程定义文件
+     *
      * @return
      */
     @Override
@@ -67,7 +68,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
         } else {
             processDefinitionList = processDefinitionQuery.list();
         }
-        for (ProcessDefinition definition: processDefinitionList) {
+        for (ProcessDefinition definition : processDefinitionList) {
             ProcessDefinitionEntityImpl entityImpl = (ProcessDefinitionEntityImpl) definition;
             CustomProcessDefinition entity = new CustomProcessDefinition();
             entity.setId(definition.getId());
@@ -96,7 +97,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
     }
 
     @Override
-    public R deployProcessDefinition(String filePath){
+    public R deployProcessDefinition(String filePath) {
         if (StringUtils.isNotBlank(filePath)) {
             FileInputStream fileInputStream = null;
             try {
@@ -121,10 +122,10 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
     }
 
     @Override
-    public R deleteProcessDeploymentByIds(String deploymentIds){
+    public R deleteProcessDeploymentByIds(String deploymentIds) {
         String[] deploymentIdsArr = Convert.toStrArray(deploymentIds);
         int counter = 0;
-        for (String deploymentId: deploymentIdsArr) {
+        for (String deploymentId : deploymentIdsArr) {
             List<ProcessInstance> instanceList = runtimeService.createProcessInstanceQuery()
                     .deploymentId(deploymentId)
                     .list();
@@ -143,7 +144,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
     public R suspendOrActiveApply(String id, String suspendState) {
         if (suspendState.equals("1")) {
             repositoryService.activateProcessDefinitionById(id);
-        } else  {
+        } else {
 
             // 当流程定义被挂起时，已经发起的该流程定义的流程实例不受影响（如果选择级联挂起则流程实例也会被挂起）。
             // 当流程定义被挂起时，无法发起新的该流程定义的流程实例。

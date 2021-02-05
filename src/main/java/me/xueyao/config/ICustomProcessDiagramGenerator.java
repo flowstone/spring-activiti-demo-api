@@ -10,7 +10,6 @@ import java.util.Set;
 
 public interface ICustomProcessDiagramGenerator extends ProcessDiagramGenerator {
     /**
-     *
      * @param bpmnModel
      * @param imageType
      * @param highLightedActivities
