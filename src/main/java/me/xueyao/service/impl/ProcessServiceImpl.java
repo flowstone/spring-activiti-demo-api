@@ -7,7 +7,6 @@ import me.xueyao.mapper.SysUserMapper;
 import me.xueyao.service.IBizTodoItemService;
 import me.xueyao.service.IProcessService;
 import me.xueyao.util.DateUtils;
-import me.xueyao.util.ShiroUtils;
 import me.xueyao.util.StringUtils;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
@@ -101,8 +100,11 @@ public class ProcessServiceImpl implements IProcessService {
 
     @Override
     public void complete(String taskId, String instanceId, String itemName, String itemContent, String module, Map<String, Object> variables, HttpServletRequest request) {
+        String loginName = "axianlu";
+
         Enumeration<String> parameterNames = request.getParameterNames();
-        String comment = null;          // 批注
+        // 批注
+        String comment = null;
         boolean agree = true;
         try {
             while (parameterNames.hasMoreElements()) {
@@ -129,7 +131,7 @@ public class ProcessServiceImpl implements IProcessService {
                 }
             }
             if (StringUtils.isNotEmpty(comment)) {
-                identityService.setAuthenticatedUserId(ShiroUtils.getLoginName());
+                identityService.setAuthenticatedUserId(loginName);
                 comment = agree ? "【同意】" + comment : "【拒绝】" + comment;
                 taskService.addComment(taskId, instanceId, comment);
             }
@@ -139,7 +141,8 @@ public class ProcessServiceImpl implements IProcessService {
             // resolveTask() 要在 claim() 之前，不然 act_hi_taskinst 表的 assignee 字段会为 null
             taskService.resolveTask(taskId, variables);
             // 只有签收任务，act_hi_taskinst 表的 assignee 字段才不为 null
-            taskService.claim(taskId, ShiroUtils.getLoginName());
+            //taskService.claim(taskId, ShiroUtils.getLoginName());
+            taskService.claim(taskId, loginName);
             taskService.complete(taskId, variables);
 
             // 更新待办事项状态
@@ -149,11 +152,12 @@ public class ProcessServiceImpl implements IProcessService {
             List<BizTodoItem> updateList = CollectionUtils.isEmpty(bizTodoItemService.selectBizTodoItemList(query)) ? null : bizTodoItemService.selectBizTodoItemList(query);
             for (BizTodoItem update: updateList) {
                 // 找到当前登录用户的 todoitem，置为已办
-                if (update.getTodoUserId().equals(ShiroUtils.getLoginName())) {
+                if (update.getTodoUserId().equals(loginName)) {
                     update.setIsView("1");
                     update.setIsHandle("1");
-                    update.setHandleUserId(ShiroUtils.getLoginName());
-                    update.setHandleUserName(ShiroUtils.getSysUser().getUserName());
+                    update.setHandleUserId(loginName);
+                    //update.setHandleUserName(ShiroUtils.getSysUser().getUserName());
+                    update.setHandleUserName("大明");
                     update.setHandleTime(DateUtils.getNowDate());
                     bizTodoItemService.updateBizTodoItem(update);
                 } else {

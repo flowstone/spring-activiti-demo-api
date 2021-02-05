@@ -66,6 +66,11 @@ public interface BizTodoItemMapper {
     @Select("SELECT * FROM BIZ_TODO_ITEM WHERE TASK_ID = #{taskId}")
     BizTodoItem selectTodoItemByTaskId(@Param(value = "taskId") String taskId);
 
+    /**
+     * 此处有问题题 后期改 请查询用户表和角色表
+     * @param taskId
+     * @return
+     */
     @Select("SELECT USER_ID_ FROM ACT_ID_MEMBERSHIP WHERE GROUP_ID_ = (SELECT GROUP_ID_ FROM ACT_RU_IDENTITYLINK WHERE TASK_ID_ = #{taskId})")
     List<String> selectTodoUserListByTaskId(@Param(value = "taskId") String taskId);
 

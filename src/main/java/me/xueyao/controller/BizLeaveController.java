@@ -123,6 +123,8 @@ public class BizLeaveController extends BaseController {
 
     /**
      * 提交申请
+     * @param id  任务的id(biz_leave的id)
+     * @param applyUserId  由前端传递值，后期改成后端直接获取登录信息
      */
     @PostMapping( "/submitApply")
     public AjaxResult submitApply(Long id, String applyUserId) {
@@ -139,12 +141,14 @@ public class BizLeaveController extends BaseController {
 
     /**
      * 我的待办列表
+     * @param bizLeave
+     * @param loginName 由前端传递值，后期改成后端直接获取登录信息
      * @return
      */
     @PostMapping("/taskList")
-    public TableDataInfo taskList(BizLeaveVo bizLeave) {
+    public TableDataInfo taskList(BizLeaveVo bizLeave, String loginName) {
         bizLeave.setType("leave");
-        List<BizLeaveVo> list = bizLeaveService.findTodoTasks(bizLeave, ShiroUtils.getLoginName());
+        List<BizLeaveVo> list = bizLeaveService.findTodoTasks(bizLeave, loginName);
         return getDataTable(list);
     }
 
@@ -209,12 +213,13 @@ public class BizLeaveController extends BaseController {
     /**
      * 我的已办列表
      * @param bizLeave
+     * @param loginName 此处先由前端传递参数，以后改成后端获取登录用户名
      * @return
      */
     @PostMapping("/taskDoneList")
-    public TableDataInfo taskDoneList(BizLeaveVo bizLeave) {
+    public TableDataInfo taskDoneList(BizLeaveVo bizLeave, String loginName) {
         bizLeave.setType("leave");
-        List<BizLeaveVo> list = bizLeaveService.findDoneTasks(bizLeave, ShiroUtils.getLoginName());
+        List<BizLeaveVo> list = bizLeaveService.findDoneTasks(bizLeave, loginName);
         return getDataTable(list);
     }
 
