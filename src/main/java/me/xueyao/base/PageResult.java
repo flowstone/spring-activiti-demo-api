@@ -29,6 +29,13 @@ public class PageResult<T> {
         this.count = page.getTotal();
     }
 
+    public PageResult(Page page, List<T> data) {
+        this.result = (T)data;
+        this.pageNum = page.getPageNum();
+        this.pageSize = page.getPageSize();
+        this.count = page.getTotal();
+    }
+
     public PageResult(int pageNum, int pageSize, List<T> data) {
         this.result = (T) data;
         this.pageNum = pageNum;

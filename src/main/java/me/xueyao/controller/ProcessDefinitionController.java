@@ -36,7 +36,7 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 @RestController
 @RequestMapping("/definition")
-public class ProcessDefinitionController {
+public class ProcessDefinitionController extends BaseController {
 
 
     private String prefix = "definition";

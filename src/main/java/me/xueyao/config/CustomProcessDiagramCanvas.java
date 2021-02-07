@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 
+/**
+ * @author simonxue
+ */
 public class CustomProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
 
     protected static Color LABEL_COLOR = new Color(0, 0, 0);
 
-    //font
     protected String activityFontName = "宋体";
     protected String labelFontName = "宋体";
     protected String annotationFontName = "宋体";
@@ -47,9 +49,11 @@ public class CustomProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
 
         g.setPaint(color);
         g.setStroke(MULTI_INSTANCE_STROKE);
-        if (isStartOrEnd) {// 开始、结束节点画圆
+        // 开始、结束节点画圆
+        if (isStartOrEnd) {
             g.drawOval(x, y, width, height);
-        } else {// 非开始、结束节点画圆角矩形
+        } else {
+            // 非开始、结束节点画圆角矩形
             RoundRectangle2D rect = new RoundRectangle2D.Double(x, y, width, height, 5, 5);
             g.draw(rect);
         }

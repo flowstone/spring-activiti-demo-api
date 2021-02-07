@@ -1,6 +1,7 @@
 package me.xueyao.service.impl;
 
 import com.github.pagehelper.Page;
+import lombok.extern.slf4j.Slf4j;
 import me.xueyao.base.PageResult;
 import me.xueyao.base.R;
 import me.xueyao.entity.SysUser;
@@ -40,6 +41,7 @@ import java.util.Map;
  * @author Xianlu Tech
  * @date 2019-10-11
  */
+@Slf4j
 @Service
 @Transactional
 public class LeaveServiceImpl implements ILeaveService {
@@ -84,8 +86,8 @@ public class LeaveServiceImpl implements ILeaveService {
 
         Page page = new Page(leaveDTO.getPageNum(), leaveDTO.getPageSize());
 
-        Page<LeaveVo> leaveVoPage = leaveMapper.selectLeaveList(leaveDTO, page);
-        leaveVoPage.getResult().forEach(leaveVo -> {
+        List<LeaveVo> leaveVoList = leaveMapper.selectLeaveList(leaveDTO, page);
+        leaveVoList.forEach(leaveVo -> {
             SysUser sysUser = userMapper.selectUserByLoginName(leaveVo.getCreateBy());
             if (sysUser != null) {
                 leaveVo.setCreateUserName(sysUser.getUserName());
@@ -120,7 +122,7 @@ public class LeaveServiceImpl implements ILeaveService {
             }
         });
 
-        return R.ofSuccess("查询成功", new PageResult<>(leaveVoPage));
+        return R.ofSuccess("查询成功", new PageResult<>(page, leaveVoList));
     }
 
     /**
@@ -186,11 +188,12 @@ public class LeaveServiceImpl implements ILeaveService {
                 leave.getTitle(), leave.getReason(), key, variables);
 
         String processInstanceId = processInstance.getId();
+        log.info("processInstanceId = {}", processInstanceId);
         // 建立双向关系
         leave.setInstanceId(processInstanceId);
         leaveMapper.updateLeave(leave);
 
-        return R.ofSuccess("启动流程", processInstance);
+        return R.ofSuccess("启动流程");
     }
 
     /**

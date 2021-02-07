@@ -143,7 +143,6 @@ public class CustomProcessDiagramGenerator extends DefaultProcessDiagramGenerato
             if (defaultFlow != null && defaultFlow.equalsIgnoreCase(flowId)) {
                 isDefault = true;
             }
-//        boolean drawConditionalIndicator = sequenceFlow.getConditionExpression() != null && !(flowNode instanceof Gateway);
 
             String sourceRef = sequenceFlow.getSourceRef();
             String targetRef = sequenceFlow.getTargetRef();
@@ -152,8 +151,8 @@ public class CustomProcessDiagramGenerator extends DefaultProcessDiagramGenerato
             List<GraphicInfo> graphicInfoList = bpmnModel.getFlowLocationGraphicInfo(flowId);
             if (graphicInfoList != null && graphicInfoList.size() > 0) {
                 graphicInfoList = connectionPerfectionizer(processDiagramCanvas, bpmnModel, sourceElement, targetElement, graphicInfoList);
-                int xPoints[] = new int[graphicInfoList.size()];
-                int yPoints[] = new int[graphicInfoList.size()];
+                int [] xPoints = new int[graphicInfoList.size()];
+                int [] yPoints = new int[graphicInfoList.size()];
 
                 for (int i = 1; i < graphicInfoList.size(); i++) {
                     GraphicInfo graphicInfo = graphicInfoList.get(i);
@@ -196,8 +195,19 @@ public class CustomProcessDiagramGenerator extends DefaultProcessDiagramGenerato
         processDiagramCanvas.drawHighLight(isStartOrEnd, (int) graphicInfo.getX(), (int) graphicInfo.getY(), (int) graphicInfo.getWidth(), (int) graphicInfo.getHeight(), color);
     }
 
+    /**
+     * 初始化
+     * @param bpmnModel
+     * @param imageType
+     * @param activityFontName
+     * @param labelFontName
+     * @param annotationFontName
+     * @param customClassLoader
+     * @return
+     */
     protected static CustomProcessDiagramCanvas initProcessDiagramCanvas(BpmnModel bpmnModel, String imageType,
-                                                                         String activityFontName, String labelFontName, String annotationFontName, ClassLoader customClassLoader) {
+                                                                         String activityFontName, String labelFontName,
+                                                                         String annotationFontName, ClassLoader customClassLoader) {
 
         // We need to calculate maximum values to know how big the image will be in its entirety
         double minX = Double.MAX_VALUE;
@@ -334,6 +344,8 @@ public class CustomProcessDiagramGenerator extends DefaultProcessDiagramGenerato
                 imageType, activityFontName, labelFontName, annotationFontName, customClassLoader);
     }
 
+
+
     @Override
     public InputStream generateDiagram(BpmnModel bpmnModel, String imageType, List<String> highLightedActivities,
                                        List<String> highLightedFlows, String activityFontName, String labelFontName, String annotationFontName,
@@ -355,8 +367,9 @@ public class CustomProcessDiagramGenerator extends DefaultProcessDiagramGenerato
     }
 
     @Override
-    public InputStream generateDiagram(BpmnModel bpmnModel, String imageType, String activityFontName, String labelFontName, String annotationFontName, ClassLoader customClassLoader) {
-        return generateDiagram(bpmnModel, imageType, Collections.<String>emptyList(), Collections.<String>emptyList(),
+    public InputStream generateDiagram(BpmnModel bpmnModel, String imageType, String activityFontName,
+                                       String labelFontName, String annotationFontName, ClassLoader customClassLoader) {
+        return generateDiagram(bpmnModel, imageType, Collections.emptyList(), Collections.emptyList(),
                 activityFontName, labelFontName, annotationFontName, customClassLoader, 1.0, new Color[]{Color.BLACK, Color.BLACK}, null);
     }
 

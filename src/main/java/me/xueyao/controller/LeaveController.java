@@ -18,7 +18,7 @@ import java.util.Collections;
  */
 @RestController
 @RequestMapping("/leave")
-public class LeaveController {
+public class LeaveController extends BaseController{
 
     @Autowired
     private ILeaveService iLeaveService;
@@ -27,6 +27,7 @@ public class LeaveController {
 
 
     /**
+     * @Todo 分页无效果
      * 查询请假业务列表
      */
     @PostMapping("/list")
@@ -81,7 +82,7 @@ public class LeaveController {
 
     /**
      * 我的待办列表
-     *
+     * @Todo 分页无效
      * @param leaveDTO
      * @param loginName 由前端传递值，后期改成后端直接获取登录信息
      * @return
