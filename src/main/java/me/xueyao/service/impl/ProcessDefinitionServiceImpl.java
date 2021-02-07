@@ -15,6 +15,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
      */
     @Override
     public R listProcessDefinition(CustomProcessDefinition customProcessDefinition) {
+        //手动分页
         Integer pageNum = customProcessDefinition.getPageNum();
         Integer pageSize = customProcessDefinition.getPageSize();
 
@@ -71,19 +73,12 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
         for (ProcessDefinition definition : processDefinitionList) {
             ProcessDefinitionEntityImpl entityImpl = (ProcessDefinitionEntityImpl) definition;
             CustomProcessDefinition entity = new CustomProcessDefinition();
-            entity.setId(definition.getId());
-            entity.setKey(definition.getKey());
-            entity.setName(definition.getName());
-            entity.setCategory(definition.getCategory());
-            entity.setVersion(definition.getVersion());
-            entity.setDescription(definition.getDescription());
-            entity.setDeploymentId(definition.getDeploymentId());
+            BeanUtils.copyProperties(definition, entity);
+
             Deployment deployment = repositoryService.createDeploymentQuery()
                     .deploymentId(definition.getDeploymentId())
                     .singleResult();
             entity.setDeploymentTime(deployment.getDeploymentTime());
-            entity.setDiagramResourceName(definition.getDiagramResourceName());
-            entity.setResourceName(definition.getResourceName());
             entity.setSuspendState(entityImpl.getSuspensionState() + "");
             if (entityImpl.getSuspensionState() == 1) {
                 entity.setSuspendStateName("已激活");

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author simonxue
@@ -182,9 +183,9 @@ public class ProcessServiceImpl implements IProcessService {
 
     @Override
     public R selectHistoryList(String processInstanceId, HistoricActivity historicActivity) {
+        //手动分页
         Integer pageNum = historicActivity.getPageNum();
         Integer pageSize = historicActivity.getPageSize();
-        List<HistoricActivity> activityList = new ArrayList<>();
 
         HistoricActivityInstanceQuery query = historyService.createHistoricActivityInstanceQuery();
         if (StringUtils.isNotBlank(historicActivity.getAssignee())) {
@@ -200,9 +201,9 @@ public class ProcessServiceImpl implements IProcessService {
                 .finished()
                 .orderByHistoricActivityInstanceStartTime()
                 .desc()
-                .list();
+                .listPage(pageNum-1* pageSize, pageSize);
 
-        historicActivityInstanceList.forEach(instance -> {
+        List<HistoricActivity> activityList = historicActivityInstanceList.stream().map(instance -> {
             HistoricActivity activity = new HistoricActivity();
             BeanUtils.copyProperties(instance, activity);
             String taskId = instance.getTaskId();
@@ -217,8 +218,8 @@ public class ProcessServiceImpl implements IProcessService {
             if (sysUser != null) {
                 activity.setAssigneeName(sysUser.getUserName());
             }
-            activityList.add(activity);
-        });
+            return activity;
+        }).collect(Collectors.toList());
 
         return R.ofSuccess("查询成功", new PageResult<>(pageNum, pageSize, activityList));
     }

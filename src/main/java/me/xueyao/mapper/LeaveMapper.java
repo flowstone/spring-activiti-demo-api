@@ -1,6 +1,5 @@
 package me.xueyao.mapper;
 
-import com.github.pagehelper.Page;
 import me.xueyao.entity.dto.LeaveDTO;
 import me.xueyao.entity.vo.LeaveVo;
 import org.springframework.stereotype.Repository;
@@ -27,10 +26,9 @@ public interface LeaveMapper {
      * 查询请假业务列表
      *
      * @param leaveDTO 请假业务
-     * @param page
      * @return 请假业务集合
      */
-    List<LeaveVo> selectLeaveList(LeaveDTO leaveDTO, Page page);
+    List<LeaveVo> selectLeaveList(LeaveDTO leaveDTO);
 
     /**
      * 新增请假业务

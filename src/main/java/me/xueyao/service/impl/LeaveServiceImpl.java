@@ -1,6 +1,7 @@
 package me.xueyao.service.impl;
 
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import me.xueyao.base.PageResult;
 import me.xueyao.base.R;
@@ -84,9 +85,8 @@ public class LeaveServiceImpl implements ILeaveService {
     @Override
     public R selectLeaveList(LeaveDTO leaveDTO, String LoginName) {
 
-        Page page = new Page(leaveDTO.getPageNum(), leaveDTO.getPageSize());
-
-        List<LeaveVo> leaveVoList = leaveMapper.selectLeaveList(leaveDTO, page);
+        Page<Object> page = PageHelper.startPage(leaveDTO.getPageNum(), leaveDTO.getPageSize());
+        List<LeaveVo> leaveVoList = leaveMapper.selectLeaveList(leaveDTO);
         leaveVoList.forEach(leaveVo -> {
             SysUser sysUser = userMapper.selectUserByLoginName(leaveVo.getCreateBy());
             if (sysUser != null) {
@@ -197,6 +197,7 @@ public class LeaveServiceImpl implements ILeaveService {
     }
 
     /**
+     * Todo 当数据大时，需要优化 手动分页
      * 查询待办任务
      */
     @Override
@@ -211,7 +212,8 @@ public class LeaveServiceImpl implements ILeaveService {
             TaskEntityImpl taskImpl = (TaskEntityImpl) task;
             String processInstanceId = taskImpl.getProcessInstanceId();
             // 条件过滤 1
-            if (StringUtils.isNotBlank(leaveDTO.getInstanceId()) && !leaveDTO.getInstanceId().equals(processInstanceId)) {
+            if (StringUtils.isNotBlank(leaveDTO.getInstanceId())
+                    && !leaveDTO.getInstanceId().equals(processInstanceId)) {
                 continue;
             }
             ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
@@ -219,8 +221,10 @@ public class LeaveServiceImpl implements ILeaveService {
                     .singleResult();
             String businessKey = processInstance.getBusinessKey();
             LeaveVo taskLeave = leaveMapper.selectLeaveById(new Long(businessKey));
+
             // 条件过滤 2
-            if (StringUtils.isNotBlank(leaveDTO.getType()) && !leaveDTO.getType().equals(taskLeave.getType())) {
+            if (StringUtils.isNotBlank(leaveDTO.getType())
+                    && !leaveDTO.getType().equals(taskLeave.getType())) {
                 continue;
             }
 
@@ -239,7 +243,7 @@ public class LeaveServiceImpl implements ILeaveService {
         }
 
 
-        return R.ofSuccess("查询成功", new PageResult<>(pageNum, pageSize, result));
+        return R.ofSuccess("查询成功", new PageResult().customizePage(pageNum, pageSize, result));
     }
 
     /**
@@ -284,7 +288,7 @@ public class LeaveServiceImpl implements ILeaveService {
             results.add(hisLeaveVo);
         }
 
-        return R.ofSuccess("查询成功", new PageResult<>(pageNum, pageSize, results));
+        return R.ofSuccess("查询成功", new PageResult().customizePage(pageNum, pageSize, results));
     }
 
     @Override

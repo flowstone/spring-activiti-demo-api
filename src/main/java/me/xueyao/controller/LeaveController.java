@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * @author simonxue
@@ -27,7 +27,6 @@ public class LeaveController extends BaseController{
 
 
     /**
-     * @Todo 分页无效果
      * 查询请假业务列表
      */
     @PostMapping("/list")
@@ -82,7 +81,6 @@ public class LeaveController extends BaseController{
 
     /**
      * 我的待办列表
-     * @Todo 分页无效
      * @param leaveDTO
      * @param loginName 由前端传递值，后期改成后端直接获取登录信息
      * @return
@@ -102,10 +100,10 @@ public class LeaveController extends BaseController{
     @PostMapping(value = "/complete/{taskId}")
     public R complete(@PathVariable("taskId") String taskId,
                       @RequestParam(value = "saveEntity", required = false) String saveEntity,
-                      @RequestBody LeaveVo leave, HttpServletRequest request, String loginName) {
+                      LeaveVo leave, HttpServletRequest request, String loginName) {
         boolean saveEntityBoolean = BooleanUtils.toBoolean(saveEntity);
         processService.complete(taskId, leave.getInstanceId(), leave.getTitle(), leave.getReason(),
-                "leave", Collections.EMPTY_MAP, request, loginName);
+                "leave", new HashMap<>(16), request, loginName);
         if (saveEntityBoolean) {
             iLeaveService.updateLeave(leave);
         }
