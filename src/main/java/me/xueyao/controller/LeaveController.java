@@ -6,6 +6,7 @@ import me.xueyao.entity.dto.LeaveUpdateDTO;
 import me.xueyao.entity.vo.LeaveVo;
 import me.xueyao.service.ILeaveService;
 import me.xueyao.service.IProcessService;
+import me.xueyao.util.ShiroUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 /**
+ * 请假流程操作
  * @author simonxue
  */
 @RestController
@@ -30,9 +32,9 @@ public class LeaveController extends BaseController{
      * 查询请假业务列表
      */
     @PostMapping("/list")
-    public R list(LeaveDTO leaveDTO, String loginName) {
+    public R list(LeaveDTO leaveDTO) {
         leaveDTO.setType("leave");
-        return iLeaveService.selectLeaveList(leaveDTO, loginName);
+        return iLeaveService.selectLeaveList(leaveDTO);
     }
 
 
@@ -40,7 +42,7 @@ public class LeaveController extends BaseController{
      * 新增保存请假业务
      */
     @PostMapping("/add")
-    public R addSave(LeaveDTO leaveDTO, String loginName) {
+    public R addSave(LeaveDTO leaveDTO) {
         /*
         Long userId = ShiroUtils.getUserId();
         if (SysUser.isAdmin(userId)) {
@@ -48,7 +50,7 @@ public class LeaveController extends BaseController{
         }
         */
         leaveDTO.setType("leave");
-        return iLeaveService.insertLeave(leaveDTO, loginName);
+        return iLeaveService.insertLeave(leaveDTO);
     }
 
     /**
@@ -72,23 +74,23 @@ public class LeaveController extends BaseController{
      * 提交申请
      *
      * @param id          任务的id(biz_leave的id)
-     * @param applyUserId 由前端传递值，后期改成后端直接获取登录信息
      */
     @PostMapping("/submitApply")
-    public R submitApply(Long id, String applyUserId) {
-        return iLeaveService.submitApply(id, applyUserId);
+    public R submitApply(Long id) {
+        return iLeaveService.submitApply(id);
     }
 
     /**
      * 我的待办列表
      * @param leaveDTO
-     * @param loginName 由前端传递值，后期改成后端直接获取登录信息
      * @return
      */
     @PostMapping("/taskList")
-    public R taskList(LeaveDTO leaveDTO, String loginName) {
+    public R taskList(LeaveDTO leaveDTO) {
         leaveDTO.setType("leave");
-        return iLeaveService.findTodoTasks(leaveDTO, loginName);
+        System.out.println(ShiroUtils.getLoginName());
+        leaveDTO.setCreateBy(ShiroUtils.getLoginName());
+        return iLeaveService.findTodoTasks(leaveDTO);
     }
 
 
@@ -97,13 +99,13 @@ public class LeaveController extends BaseController{
      *
      * @return
      */
-    @PostMapping(value = "/complete/{taskId}")
-    public R complete(@PathVariable("taskId") String taskId,
+    @PostMapping(value = "/complete")
+    public R complete(@RequestParam("taskId") String taskId,
                       @RequestParam(value = "saveEntity", required = false) String saveEntity,
-                      LeaveVo leave, HttpServletRequest request, String loginName) {
+                      LeaveVo leave, HttpServletRequest request) {
         boolean saveEntityBoolean = BooleanUtils.toBoolean(saveEntity);
         processService.complete(taskId, leave.getInstanceId(), leave.getTitle(), leave.getReason(),
-                "leave", new HashMap<>(16), request, loginName);
+                "leave", new HashMap<>(16), request);
         if (saveEntityBoolean) {
             iLeaveService.updateLeave(leave);
         }
@@ -115,13 +117,12 @@ public class LeaveController extends BaseController{
      * 我的已办列表
      *
      * @param leaveDTO
-     * @param loginName 此处先由前端传递参数，以后改成后端获取登录用户名
      * @return
      */
     @PostMapping("/taskDoneList")
-    public R taskDoneList(LeaveDTO leaveDTO, String loginName) {
+    public R taskDoneList(LeaveDTO leaveDTO) {
         leaveDTO.setType("leave");
-        return iLeaveService.findDoneTasks(leaveDTO, loginName);
+        return iLeaveService.findDoneTasks(leaveDTO);
     }
 
 }

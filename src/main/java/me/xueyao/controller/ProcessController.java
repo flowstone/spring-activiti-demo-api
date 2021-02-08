@@ -6,6 +6,7 @@ import me.xueyao.config.ICustomProcessDiagramGenerator;
 import me.xueyao.config.WorkflowConstants;
 import me.xueyao.entity.HistoricActivity;
 import me.xueyao.service.IProcessService;
+import me.xueyao.util.ShiroUtils;
 import me.xueyao.util.StringUtils;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * 流程相关操作
  * @author simonxue
  */
 @Slf4j
@@ -245,8 +247,8 @@ public class ProcessController {
 
 
     @PostMapping("/delegate")
-    public R delegate(String taskId, String delegateToUser, String loginName) {
-        return iProcessService.delegate(taskId, loginName, delegateToUser);
+    public R delegate(String taskId, String delegateToUser) {
+        return iProcessService.delegate(taskId, ShiroUtils.getLoginName(), delegateToUser);
     }
 
     /**

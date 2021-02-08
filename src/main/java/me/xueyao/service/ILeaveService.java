@@ -27,16 +27,15 @@ public interface ILeaveService {
      * @param loginName
      * @return 请假业务集合
      */
-    R selectLeaveList(LeaveDTO leaveDTO, String loginName);
+    R selectLeaveList(LeaveDTO leaveDTO);
 
     /**
      * 新增请假业务
      *
      * @param leaveDTO  请假业务
-     * @param loginName
      * @return 结果
      */
-    R insertLeave(LeaveDTO leaveDTO, String loginName);
+    R insertLeave(LeaveDTO leaveDTO);
 
     /**
      * 修改请假业务
@@ -69,7 +68,7 @@ public interface ILeaveService {
      * @param applyUserId
      * @return
      */
-    R submitApply(Long id, String applyUserId);
+    R submitApply(Long id);
 
     /**
      * 查询我的待办列表
@@ -78,7 +77,7 @@ public interface ILeaveService {
      * @param userId
      * @return
      */
-    R findTodoTasks(LeaveDTO leaveDTO, String userId);
+    R findTodoTasks(LeaveDTO leaveDTO);
 
     /**
      * 查询已办列表
@@ -87,7 +86,7 @@ public interface ILeaveService {
      * @param userId
      * @return
      */
-    R findDoneTasks(LeaveDTO leaveDTO, String userId);
+    R findDoneTasks(LeaveDTO leaveDTO);
 
     /**
      * 更新

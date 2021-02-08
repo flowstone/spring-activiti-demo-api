@@ -13,10 +13,7 @@ import me.xueyao.mapper.LeaveMapper;
 import me.xueyao.mapper.SysUserMapper;
 import me.xueyao.service.ILeaveService;
 import me.xueyao.service.IProcessService;
-import me.xueyao.util.BeanCompareUtils;
-import me.xueyao.util.Convert;
-import me.xueyao.util.DateUtils;
-import me.xueyao.util.StringUtils;
+import me.xueyao.util.*;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -79,11 +76,10 @@ public class LeaveServiceImpl implements ILeaveService {
      * 查询请假业务列表
      *
      * @param leaveDTO  请假业务
-     * @param LoginName
      * @return 请假业务
      */
     @Override
-    public R selectLeaveList(LeaveDTO leaveDTO, String LoginName) {
+    public R selectLeaveList(LeaveDTO leaveDTO) {
 
         Page<Object> page = PageHelper.startPage(leaveDTO.getPageNum(), leaveDTO.getPageSize());
         List<LeaveVo> leaveVoList = leaveMapper.selectLeaveList(leaveDTO);
@@ -129,12 +125,11 @@ public class LeaveServiceImpl implements ILeaveService {
      * 新增请假业务
      *
      * @param leaveDTO  请假业务
-     * @param loginName
      * @return 结果
      */
     @Override
-    public R insertLeave(LeaveDTO leaveDTO, String loginName) {
-        leaveDTO.setCreateBy(loginName);
+    public R insertLeave(LeaveDTO leaveDTO) {
+        leaveDTO.setCreateBy(ShiroUtils.getLoginName());
         leaveDTO.setCreateTime(DateUtils.getNowDate());
         int count = leaveMapper.insertLeave(leaveDTO);
         return R.ofSuccess("添加成功", count);
@@ -169,22 +164,22 @@ public class LeaveServiceImpl implements ILeaveService {
      * 启动流程
      *
      * @param id
-     * @param applyUserId
      * @return
      */
     @Override
-    public R submitApply(Long id, String applyUserId) {
+    public R submitApply(Long id) {
         LeaveVo leave = selectLeaveById(id);
-        leave.setApplyUser(applyUserId);
+        String loginName = ShiroUtils.getLoginName();
+        leave.setApplyUser(loginName);
         leave.setApplyTime(DateUtils.getNowDate());
-        leave.setUpdateBy(applyUserId);
+        leave.setUpdateBy(loginName);
         leaveMapper.updateLeave(leave);
         // 实体类 ID，作为流程的业务 key
         String businessKey = leave.getId().toString();
 
         String key = "leave";
-        Map<String, Object> variables = new HashMap<>();
-        ProcessInstance processInstance = processService.submitApply(applyUserId, businessKey,
+        Map<String, Object> variables = new HashMap<>(16);
+        ProcessInstance processInstance = processService.submitApply(loginName, businessKey,
                 leave.getTitle(), leave.getReason(), key, variables);
 
         String processInstanceId = processInstance.getId();
@@ -201,12 +196,12 @@ public class LeaveServiceImpl implements ILeaveService {
      * 查询待办任务
      */
     @Override
-    public R findTodoTasks(LeaveDTO leaveDTO, String userId) {
+    public R findTodoTasks(LeaveDTO leaveDTO) {
         // 手动分页
         Integer pageNum = leaveDTO.getPageNum();
         Integer pageSize = leaveDTO.getPageSize();
         List<LeaveVo> result = new ArrayList<>();
-        List<Task> tasks = processService.findTodoTasks(userId, leaveDTO.getType());
+        List<Task> tasks = processService.findTodoTasks(ShiroUtils.getLoginName(), leaveDTO.getType());
 
         for (Task task : tasks) {
             TaskEntityImpl taskImpl = (TaskEntityImpl) task;
@@ -250,17 +245,16 @@ public class LeaveServiceImpl implements ILeaveService {
      * 查询已办列表
      *
      * @param leaveDTO
-     * @param userId
      * @return
      */
     @Override
-    public R findDoneTasks(LeaveDTO leaveDTO, String userId) {
+    public R findDoneTasks(LeaveDTO leaveDTO) {
         // 手动分页
         Integer pageNum = leaveDTO.getPageNum();
         Integer pageSize = leaveDTO.getPageSize();
 
         List<LeaveVo> results = new ArrayList<>();
-        List<HistoricTaskInstance> hisList = processService.findDoneTasks(userId, leaveDTO.getType());
+        List<HistoricTaskInstance> hisList = processService.findDoneTasks(ShiroUtils.getLoginName(), leaveDTO.getType());
         // 根据流程的业务ID查询实体并关联
         for (HistoricTaskInstance instance : hisList) {
             String processInstanceId = instance.getProcessInstanceId();

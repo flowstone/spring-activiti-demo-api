@@ -69,7 +69,7 @@ public interface IProcessService {
      * @return
      */
     R complete(String taskId, String instanceId, String itemName, String itemContent, String module,
-               Map<String, Object> variables, HttpServletRequest request, String loginName);
+               Map<String, Object> variables, HttpServletRequest request);
 
     /**
      * 委托任务
