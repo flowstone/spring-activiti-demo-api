@@ -1,5 +1,63 @@
-# Spring activiti demo api
+# Spring Activiti Demo Api
 
+
+### 开发环境
+* SpringBoot 2.1.10
+* Mybatis 2.1.0
+* Activiti 6.0
+* Shiro 1.4.2
+
+### 项目介绍
+此Demo的代码是移植开源工作流管理系统(闲鹿工作流),仅抽取请假流程，如果想了解更新信息，
+请查看 [闲鹿工作流](https://gitee.com/calvinhwang123/RuoYi-Process)
+
+### 功能模块如下
+* 流程定义管理
+    * 部署流程定义
+    * 查询流程定义列表
+* 请假管理
+    * 查询请假列表
+    * 新增请假
+    * 提交申请
+    * 我的待办列表
+    * 完成任务
+    * 我的已办列表
+    * 查看流程(图片)
+* 流程管理
+    * 撤销
+    * 审批历史列表
+* 登陆
+
+### 账号
+1、普通用户
+```json
+{
+  "username": "chengxy",
+  "password": "123456"
+}
+```
+2、领导
+```json
+{
+  "username": "axianlu",
+  "password": "123456"
+}
+```
+3、人事
+```json
+{
+  "username": "rensm",
+  "password": "123456"
+}
+```
+
+### 更新说明
+* 2021.02.08 基本完成
+
+---
+> 注意：下面内容作废，7.0有个问题无法解决，故采用6.0版本，分支为activiti-6.0
+
+--- 
 ### 开发环境
 * SpringBoot
 * JPA
