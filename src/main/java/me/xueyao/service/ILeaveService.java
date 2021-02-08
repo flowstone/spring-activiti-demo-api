@@ -24,7 +24,6 @@ public interface ILeaveService {
      * 查询请假业务列表
      *
      * @param leaveDTO  请假业务
-     * @param loginName
      * @return 请假业务集合
      */
     R selectLeaveList(LeaveDTO leaveDTO);
@@ -65,7 +64,6 @@ public interface ILeaveService {
      * 启动流程
      *
      * @param id
-     * @param applyUserId
      * @return
      */
     R submitApply(Long id);
@@ -74,7 +72,6 @@ public interface ILeaveService {
      * 查询我的待办列表
      *
      * @param leaveDTO
-     * @param userId
      * @return
      */
     R findTodoTasks(LeaveDTO leaveDTO);
@@ -83,7 +80,6 @@ public interface ILeaveService {
      * 查询已办列表
      *
      * @param leaveDTO
-     * @param userId
      * @return
      */
     R findDoneTasks(LeaveDTO leaveDTO);

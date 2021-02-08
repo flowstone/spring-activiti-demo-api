@@ -200,7 +200,7 @@ public class ProcessServiceImpl implements IProcessService {
                 .finished()
                 .orderByHistoricActivityInstanceStartTime()
                 .desc()
-                .listPage(pageNum-1* pageSize, pageSize);
+                .listPage((pageNum-1)* pageSize, pageSize);
 
         List<HistoricActivity> activityList = historicActivityInstanceList.stream().map(instance -> {
             HistoricActivity activity = new HistoricActivity();
