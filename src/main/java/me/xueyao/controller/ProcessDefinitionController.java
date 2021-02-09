@@ -2,6 +2,10 @@ package me.xueyao.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import me.xueyao.base.R;
 import me.xueyao.config.Global;
@@ -34,6 +38,7 @@ import java.io.UnsupportedEncodingException;
  * 流程定义相关操作
  * @author simonxue
  */
+@Api(tags = "流程定义相关操作")
 @Slf4j
 @RestController
 @RequestMapping("/definition")
@@ -52,8 +57,18 @@ public class ProcessDefinitionController {
         return prefix + "/definition";
     }
 
+    /**
+     * 流程定义列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @ApiOperation(value = "流程定义列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", required = true, value = "当前页", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "pageSize", required = true, value = "每页条数", dataType = "int", paramType = "query")
+    })
     @PostMapping("/list")
-    @ResponseBody
     public R list(@RequestParam("pageNum") Integer pageNum,
                   @RequestParam("pageSize") Integer pageSize) {
         CustomProcessDefinition processDefinition = new CustomProcessDefinition();
@@ -65,8 +80,9 @@ public class ProcessDefinitionController {
     /**
      * 部署流程定义
      */
+    @ApiOperation("部署流程定义")
+    @ApiImplicitParam(name = "processDefinition", required = true, value = "流程定义文件", dataType = "MultipartFile", paramType = "form")
     @PostMapping("/upload")
-    @ResponseBody
     public R upload(@RequestParam("processDefinition") MultipartFile file) {
         try {
             if (!file.isEmpty()) {
@@ -93,7 +109,6 @@ public class ProcessDefinitionController {
     }
 
     @PostMapping("/remove")
-    @ResponseBody
     public R remove(String ids) {
         return iProcessDefinitionService.deleteProcessDeploymentByIds(ids);
     }
@@ -111,6 +126,11 @@ public class ProcessDefinitionController {
      * @param processDefinitionId 流程定义ID
      * @param resourceName        资源名称
      */
+    //@ApiOperation(value = "读取流程资源", response=Void.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pdid", required = true, value = "实例ID", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "resourceName", required = true, value = "文件全路径", dataType = "String", paramType = "query")
+    })
     @RequestMapping(value = "/readResource")
     public void readResource(@RequestParam("pdid") String processDefinitionId,
                              @RequestParam("resourceName") String resourceName,

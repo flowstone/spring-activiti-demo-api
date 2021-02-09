@@ -39,7 +39,7 @@ custom:
   #password: 123456
   global:
     #name:
-    #version:
+    version: v1.1
     #copyrightYear:
     #demoEnabled:
     profile: /Users/simonxue/Developer/Temp

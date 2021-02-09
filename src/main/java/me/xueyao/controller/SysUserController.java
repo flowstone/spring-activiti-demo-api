@@ -1,5 +1,9 @@
 package me.xueyao.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import me.xueyao.base.R;
 import me.xueyao.entity.SysUser;
 import me.xueyao.mapper.SysUserMapper;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Simon.Xue
  * @date 2/7/21 4:40 PM
  **/
+@Api(tags = "用户管理相关接口")
 @RestController
 public class SysUserController {
 
@@ -31,6 +36,11 @@ public class SysUserController {
      * @param password
      * @return
      */
+    @ApiOperation(value = "用户登录", notes = "所有功能需要登录使用")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username",  value = "用户名", required = true, dataType = "String" , paramType = "query"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String", paramType = "query")
+    })
     @PostMapping("/toLogin")
     public R toLogin(@RequestParam("username") String username,
                      @RequestParam("password") String password) {

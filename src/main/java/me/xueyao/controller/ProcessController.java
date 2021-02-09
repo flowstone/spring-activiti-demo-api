@@ -1,5 +1,9 @@
 package me.xueyao.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import me.xueyao.base.R;
 import me.xueyao.config.ICustomProcessDiagramGenerator;
@@ -42,6 +46,7 @@ import java.util.stream.Collectors;
  * 流程相关操作
  * @author simonxue
  */
+@Api(tags= "流程相关操作")
 @Slf4j
 @RestController
 @RequestMapping("/process")
@@ -72,6 +77,12 @@ public class ProcessController {
      * @param pageSize
      * @return
      */
+    @ApiOperation(value = "审批历史列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", required = true, value = "当前页", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "pageSize", required = true, value = "每页条数", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "instanceId", required = true, value = "实例ID", dataType = "String", paramType = "query")
+    })
     @PostMapping("/listHistory")
     public R listHistory(@RequestParam("instanceId") String instanceId,
                          @RequestParam("pageNum") Integer pageNum,
@@ -88,6 +99,10 @@ public class ProcessController {
      * @param response
      * @throws Exception
      */
+    //@ApiOperation(value = "查看流程图")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "instanceId", required = true, value = "实例ID", dataType = "String", paramType = "query"),
+    })
     @RequestMapping(value = "/read-resource")
     public void readResource(@RequestParam("instanceId") String pProcessInstanceId, HttpServletResponse response)
             throws Exception {
@@ -270,10 +285,15 @@ public class ProcessController {
      * @param instanceId
      * @return
      */
+    @ApiOperation(value = "用户撤销")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "instanceId", required = true, value = "实例ID", dataType = "String", paramType = "query"),
+    })
     @PostMapping("/cancelApply")
     public R cancelApply(@RequestParam("instanceId") String instanceId) {
         return iProcessService.cancelApply(instanceId, "用户撤销");
     }
+
 
     @PostMapping("/suspendOrActiveApply")
     public R suspendOrActiveApply(String instanceId, String suspendState) {
