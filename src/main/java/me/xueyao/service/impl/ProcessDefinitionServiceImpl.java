@@ -18,7 +18,6 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.io.FileInputStream;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.zip.ZipInputStream;
 
 @Slf4j
-@Transactional
 @Service
 public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
 

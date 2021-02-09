@@ -1,9 +1,10 @@
 package me.xueyao.service.impl;
 
-import me.xueyao.entity.TodoItem;
+import lombok.extern.slf4j.Slf4j;
 import me.xueyao.entity.SysUser;
-import me.xueyao.mapper.TodoItemMapper;
+import me.xueyao.entity.TodoItem;
 import me.xueyao.mapper.SysUserMapper;
+import me.xueyao.mapper.TodoItemMapper;
 import me.xueyao.service.ITodoItemService;
 import me.xueyao.util.Convert;
 import me.xueyao.util.DateUtils;
@@ -24,8 +25,8 @@ import java.util.List;
  * @author Xianlu Tech
  * @date 2019-11-08
  */
+@Slf4j
 @Service
-@Transactional
 public class TodoItemServiceImpl implements ITodoItemService {
     @Autowired
     private TodoItemMapper todoItemMapper;
@@ -101,6 +102,7 @@ public class TodoItemServiceImpl implements ITodoItemService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public int insertTodoItem(String instanceId, String itemName, String itemContent, String module) {
         TodoItem todoItem = new TodoItem();
         todoItem.setItemName(itemName);
@@ -133,6 +135,7 @@ public class TodoItemServiceImpl implements ITodoItemService {
                 todoItemMapper.insertBizTodoItem(newItem);
                 counter++;
             } else {
+                log.info("查询候选用户组");
                 // 查询候选用户组
                 List<String> todoUserIdList = todoItemMapper.selectTodoUserListByTaskId(task.getId());
                 if (!CollectionUtils.isEmpty(todoUserIdList)) {

@@ -45,7 +45,7 @@
             <if test="type != null  and type != ''">and type = #{type}</if>
             <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
             <if test="reason != null  and reason != ''">and reason = #{reason}</if>
-            <if test="startTime != null ">and start_time = #startTime}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
             <if test="endTime != null ">and end_time = #{endTime}</if>
             <if test="totalTime != null ">and total_time = #{totalTime}</if>
             <if test="instanceId != null  and instanceId != ''">and instance_id = #{instanceId}</if>

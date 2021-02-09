@@ -25,7 +25,6 @@ import org.activiti.engine.task.Task;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-@Transactional
 public class LeaveServiceImpl implements ILeaveService {
     @Autowired
     private LeaveMapper leaveMapper;
@@ -131,6 +129,7 @@ public class LeaveServiceImpl implements ILeaveService {
     public R insertLeave(LeaveDTO leaveDTO) {
         leaveDTO.setCreateBy(ShiroUtils.getLoginName());
         leaveDTO.setCreateTime(DateUtils.getNowDate());
+        leaveDTO.setTotalTime(DateUtils.secondBetween(leaveDTO.getStartTime(), leaveDTO.getEndTime()));
         int count = leaveMapper.insertLeave(leaveDTO);
         return R.ofSuccess("添加成功", count);
     }
@@ -169,11 +168,13 @@ public class LeaveServiceImpl implements ILeaveService {
     @Override
     public R submitApply(Long id) {
         LeaveVo leave = selectLeaveById(id);
+
         String loginName = ShiroUtils.getLoginName();
         leave.setApplyUser(loginName);
         leave.setApplyTime(DateUtils.getNowDate());
         leave.setUpdateBy(loginName);
         leaveMapper.updateLeave(leave);
+
         // 实体类 ID，作为流程的业务 key
         String businessKey = leave.getId().toString();
 

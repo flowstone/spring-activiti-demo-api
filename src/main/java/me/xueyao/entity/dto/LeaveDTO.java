@@ -1,5 +1,6 @@
 package me.xueyao.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import me.xueyao.entity.Leave;
 
@@ -41,9 +42,10 @@ public class LeaveDTO extends Leave {
      */
     private String suspendState;
 
-
+    @JsonIgnore
     private Integer pageNum;
 
+    @JsonIgnore
     private Integer pageSize;
 
 

@@ -1,5 +1,6 @@
 package me.xueyao.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import me.xueyao.entity.Leave;
 
@@ -38,8 +39,10 @@ public class LeaveVo extends Leave {
      */
     private String suspendState;
 
+    @JsonIgnore
     private Integer pageNum;
 
+    @JsonIgnore
     private Integer pageSize;
 
 

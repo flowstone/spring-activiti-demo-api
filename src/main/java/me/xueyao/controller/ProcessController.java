@@ -25,6 +25,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -63,19 +64,32 @@ public class ProcessController {
     private RuntimeService runtimeService;
 
 
+
     /**
      * 审批历史列表
-     *
      * @param instanceId
+     * @param pageNum
+     * @param pageSize
      * @return
      */
     @PostMapping("/listHistory")
-    public R listHistory(String instanceId, HistoricActivity historicActivity) {
+    public R listHistory(@RequestParam("instanceId") String instanceId,
+                         @RequestParam("pageNum") Integer pageNum,
+                         @RequestParam("pageSize") Integer pageSize) {
+        HistoricActivity historicActivity = new HistoricActivity();
+        historicActivity.setPageNum(pageNum);
+        historicActivity.setPageSize(pageSize);
         return iProcessService.selectHistoryList(instanceId, historicActivity);
     }
 
+    /**
+     * 查看流程图
+     * @param pProcessInstanceId
+     * @param response
+     * @throws Exception
+     */
     @RequestMapping(value = "/read-resource")
-    public void readResource(String pProcessInstanceId, HttpServletResponse response)
+    public void readResource(@RequestParam("instanceId") String pProcessInstanceId, HttpServletResponse response)
             throws Exception {
         // 设置页面不缓存
         response.setHeader("Pragma", "No-cache");
@@ -257,7 +271,7 @@ public class ProcessController {
      * @return
      */
     @PostMapping("/cancelApply")
-    public R cancelApply(String instanceId) {
+    public R cancelApply(@RequestParam("instanceId") String instanceId) {
         return iProcessService.cancelApply(instanceId, "用户撤销");
     }
 

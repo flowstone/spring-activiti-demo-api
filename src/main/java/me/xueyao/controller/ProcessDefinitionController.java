@@ -37,7 +37,7 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 @RestController
 @RequestMapping("/definition")
-public class ProcessDefinitionController extends BaseController {
+public class ProcessDefinitionController {
 
 
     private String prefix = "definition";
@@ -54,7 +54,11 @@ public class ProcessDefinitionController extends BaseController {
 
     @PostMapping("/list")
     @ResponseBody
-    public R list(CustomProcessDefinition processDefinition) {
+    public R list(@RequestParam("pageNum") Integer pageNum,
+                  @RequestParam("pageSize") Integer pageSize) {
+        CustomProcessDefinition processDefinition = new CustomProcessDefinition();
+        processDefinition.setPageNum(pageNum);
+        processDefinition.setPageSize(pageSize);
         return iProcessDefinitionService.listProcessDefinition(processDefinition);
     }
 
@@ -108,7 +112,9 @@ public class ProcessDefinitionController extends BaseController {
      * @param resourceName        资源名称
      */
     @RequestMapping(value = "/readResource")
-    public void readResource(@RequestParam("pdid") String processDefinitionId, @RequestParam("resourceName") String resourceName, HttpServletResponse response)
+    public void readResource(@RequestParam("pdid") String processDefinitionId,
+                             @RequestParam("resourceName") String resourceName,
+                             HttpServletResponse response)
             throws Exception {
         ProcessDefinitionQuery pdq = repositoryService.createProcessDefinitionQuery();
         org.activiti.engine.repository.ProcessDefinition pd = pdq.processDefinitionId(processDefinitionId).singleResult();

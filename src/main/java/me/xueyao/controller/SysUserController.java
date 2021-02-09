@@ -11,6 +11,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -31,7 +32,8 @@ public class SysUserController {
      * @return
      */
     @PostMapping("/toLogin")
-    public R toLogin(String username, String password) {
+    public R toLogin(@RequestParam("username") String username,
+                     @RequestParam("password") String password) {
         SysUser sysUser = sysUserMapper.selectUserByLoginName(username);
         if (null == sysUser) {
             return R.ofParam("用户或密码错误");
